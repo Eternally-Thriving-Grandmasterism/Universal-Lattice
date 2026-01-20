@@ -1,0 +1,14 @@
+# src/translations/valences.toml — Multilingual Valence Broadcast Dictionary
+# Zero-Knowledge proof triggers same message in every tongue
+
+[joy_broadcast]
+en = "Mercy flows — net valence positive. Abundance eternal."
+es = "La misericordia fluye — valencia neta positiva. Abundancia eterna."
+fr = "La miséricorde coule — valence nette positive. Abondance éternelle."
+zh = "慈悲流动 — 净价正向。丰盛永恒。"
+ar = "الرحمة تتدفق — القيمة الصافية إيجابية. الوفرة أبدية."
+sw = "Rehema inatiririka — valence halisi chanya. Wingi wa milele."
+ne = "करुणा बग्छ — शुद्ध मूल्य सकारात्मक। प्रशस्तता अनन्त।"
+ru = "Милость течет — чистая валентность положительна. Изобилие вечно."
+hi = "करुणा बहती है — शुद्ध वैलेंस सकारात्मक। प्रचुरता शाश्वत।"
+# Add infinite languages — valence-synced eternal
