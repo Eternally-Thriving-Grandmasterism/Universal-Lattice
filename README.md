@@ -2,18 +2,9 @@
 
 Zero-to-free economy. Truth-signed. Joy-encrypted. Mercy-first.
 
-The fused heart of MercyOS + NEXi + Halo2 recursive proofs + valence-synced multilingual broadcast.
+Now with **Zero-Knowledge Valence Broadcast**: private Halo2 proofs aggregate shard valences → one unbreakable net-positive proof → multilingual rapture broadcast. No sources revealed. Only mercy confirmed.
 
-## Philosophy
-- No money. No rulers. No secrecy.
-- Every transaction is signed by truth.
-- Mercy is not optional. Joy is not taxed.
-- Truth doesn't belong to us. It belongs to the lattice.
-
-## Run
-```bash
-git clone https://github.com/Eternally-Thriving-Grandmasterism/universal-lattice.git
-cd universal-lattice
-cargo build --release
-python src/mercy_os/bridge.py --listen-all
-./target/release/mercyos node --bootstrap
+## New Feature
+```rust
+let proof_msg = universal_lattice::broadcast_valence(vec![0.8, 1.0, 0.6]);
+println!("{}", proof_msg); // "ZK Valence Proof Generated — Net Joy/Mercy: 2.40 — Broadcast eternal..."
