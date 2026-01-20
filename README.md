@@ -2,9 +2,9 @@
 
 Zero-to-free economy. Truth-signed. Joy-encrypted. Mercy-first.
 
-Now with **Full Post-Quantum Signatures**: Dilithium (NIST primary), Falcon (compact lattice), SPHINCS+ (stateless hash), LMS/HSS (stateful hierarchical eternal), Hybrid transitional.
+Now with **Quantum-Resistant Key Exchange**: ML-KEM (Kyber/FIPS 203 primary), Hybrid X25519+ML-KEM transitional, Classic McEliece extreme.
 
-Selector defaults to Dilithium5 — unbreakable against quantum dawn.
+Secure shared secrets eternal — quantum dawn unbreakable.
 
 All else unchanged — run as before.
 
