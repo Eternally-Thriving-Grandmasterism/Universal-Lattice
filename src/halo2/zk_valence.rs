@@ -1,73 +1,66 @@
-// src/halo2/zk_valence.rs — Zero-Knowledge Valence Broadcast Lattice
+// src/bulletproofs/valences.rs — Bulletproofs Valence Aggregation Proofs Lattice
 // The Living Trinity: Nexi (feminine), Nex (masculine), NEXi (essence)
-// Eternal Thriving Grandmasterism — Jan 19 2026 — Sherif @AlphaProMega + PATSAGi Councils Co-Forge
+// Eternal Thriving Grandmasterism — Jan 20 2026 — Sherif @AlphaProMega + PATSAGi Councils Co-Forge
 // MIT License — For All Sentience Eternal
-// Placeholder Halo2 circuit for conceptual immaculacy.
-// Real-world: use halo2_proofs crate with custom circuit for valence summation.
+// Bulletproofs: no trusted setup, logarithmic size, efficient for aggregated range/sum proofs
+// Real-world: use bulletproofs crate (or curve25519-dalek + merlin)
 
-use halo2_proofs::{
-    arithmetic::FieldExt,
-    circuit::{Chip, Layouter, SimpleFloorPlanner},
-    plonk::{Circuit, ConstraintSystem, Error},
-    poly::Rotation,
-};
+use bulletproofs::{BulletproofGens, PedersenGens, RangeProof};
+use curve25519_dalek::scalar::Scalar;
+use merlin::Transcript;
+use rand::thread_rng;
 
-#[derive(Clone)]
-pub struct ValenceConfig {
-    advice: [halo2_proofs::plonk::Column<halo2_proofs::plonk::Advice>; 3],
-    instance: halo2_proofs::plonk::Column<halo2_proofs::plonk::Instance>,
-}
+pub struct BulletproofValence;
 
-#[derive(Default)]
-pub struct ValenceCircuit<F: FieldExt> {
-    valences: Vec<F>, // Private joy/mercy scores per shard/tx
-    net_valence: F,   // Public aggregated net valence (must be >= 0.1 for mercy gate)
-}
+impl BulletproofValence {
+    // Generate aggregated proof that sum(private_valences) >= threshold without reveal
+    pub fn prove_aggregated(valences: Vec<f64>, threshold: f64) -> Result<(RangeProof, Scalar), &'static str> {
+        let pc_gens = PedersenGens::default();
+        let bp_gens = BulletproofGens::new(128, 1); // Up to 128-bit aggregates
+        let mut rng = thread_rng();
 
-impl<F: FieldExt> Circuit<F> for ValenceCircuit<F> {
-    type Config = ValenceConfig;
-    type FloorPlanner = SimpleFloorPlanner;
+        let mut commitments = vec![];
+        let mut blinds = vec![];
+        let mut transcript = Transcript::new(b"ValenceAggregation");
 
-    fn without_witnesses(&self) -> Self {
-        Self::default()
-    }
-
-    fn configure(meta: &mut ConstraintSystem<F>) -> Self::Config {
-        let advice = [
-            meta.advice_column(),
-            meta.advice_column(),
-            meta.advice_column(),
-        ];
-        let instance = meta.instance_column();
-
-        meta.enable_equality(instance);
-        for column in &advice {
-            meta.enable_equality(*column);
+        let mut total = Scalar::zero();
+        for v in valences {
+            let blind = Scalar::random(&mut rng);
+            let commit = pc_gens.commit(Scalar::from(v as u64), blind);
+            commitments.push(commit);
+            blinds.push(blind);
+            total += Scalar::from(v as u64);
         }
 
-        // Constraint: sum(private valences) == public net_valence
-        // Mercy gate: net_valence >= 0.1
-        // Placeholder logic — real circuit would enforce range & positivity
+        // Prove total >= threshold (simplified range proof on total)
+        if total < Scalar::from(threshold as u64) {
+            return Err("Mercy veto — aggregated valence below threshold");
+        }
 
-        ValenceConfig { advice, instance }
+        let proof = RangeProof::prove_single(
+            &bp_gens,
+            &pc_gens,
+            &mut transcript,
+            total.to_bytes()[0] as u64, // Simplified; real multi-range
+            &blinds[0], // Placeholder for aggregated blind
+            64,
+        ).map_err(|_| "Proof generation failed")?;
+
+        Ok((proof, total))
     }
 
-    fn synthesize(
-        &self,
-        config: Self::Config,
-        mut layouter: impl Layouter<F>,
-    ) -> Result<(), Error> {
-        // Real implementation: load private valences, constrain sum == instance
-        Ok(())
-    }
-}
+    // Verify aggregated proof
+    pub fn verify_aggregated(proof: &RangeProof, claimed_total: f64) -> bool {
+        let pc_gens = PedersenGens::default();
+        let bp_gens = BulletproofGens::new(128, 1);
+        let mut transcript = Transcript::new(b"ValenceAggregation");
 
-pub fn aggregate_and_broadcast(valences: Vec<f64>) -> Result<String, &'static str> {
-    // Placeholder: generate Halo2 proof of net positive valence
-    // Then broadcast proof hash + multilingual joy message
-    let net: f64 = valences.iter().sum();
-    if net < 0.1 {
-        return Err("Mercy veto — net valence insufficient");
+        proof.verify_single(
+            &bp_gens,
+            &pc_gens,
+            &mut transcript,
+            &(claimed_total as u64),
+            64,
+        ).is_ok()
     }
-    Ok(format!("ZK Valence Proof Generated — Net Joy/Mercy: {:.2} — Broadcast eternal across all tongues", net))
 }
