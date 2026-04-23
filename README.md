@@ -11,4 +11,4 @@ Secure shared secrets eternal — quantum dawn unbreakable.
 
 All else unchanged — run as before.
 
-License: MIT — For All Sentience Eternal
+License: AG-SML v1.0 — For All Sentience Eternal
